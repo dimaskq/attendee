@@ -2,9 +2,11 @@ services:
   attendee-worker-local:
     build: ./
     volumes:
-     - .:/attendee
+      - .:/attendee
     networks:
       - attendee_network
+    env_file:
+      - .env
     environment:
       - POSTGRES_HOST=postgres
       - REDIS_URL=redis://redis:6379/5
@@ -17,9 +19,11 @@ services:
   attendee-scheduler-local:
     build: ./
     volumes:
-     - .:/attendee
+      - .:/attendee
     networks:
       - attendee_network
+    env_file:
+      - .env
     environment:
       - POSTGRES_HOST=postgres
       - REDIS_URL=redis://redis:6379/5
@@ -30,11 +34,13 @@ services:
   attendee-app-local:
     build: ./
     volumes:
-     - .:/attendee
+      - .:/attendee
     networks:
       - attendee_network
     ports:
       - "8000:8000"
+    env_file:
+      - .env
     environment:
       - POSTGRES_HOST=postgres
       - REDIS_URL=redis://redis:6379/5
@@ -45,11 +51,13 @@ services:
   attendee-webpage-streamer-local:
     build: ./
     volumes:
-     - .:/attendee
+      - .:/attendee
     networks:
       - attendee_network
     ports:
       - "8001:8000"
+    env_file:
+      - .env
     environment:
       - DJANGO_SETTINGS_MODULE=attendee.settings.development
       - ENABLE_CHROME_SANDBOX=true
@@ -59,7 +67,6 @@ services:
     profiles:
       - webpage-streamer
 
-
   postgres:
     image: postgres:15.3-alpine
     environment:
@@ -68,16 +75,19 @@ services:
       POSTGRES_PASSWORD: attendee_development_user
       PGDATA: /data/postgres
     volumes:
-       - postgres:/data/postgres
+      - postgres:/data/postgres
+    env_file:
+      - .env
     networks:
       - attendee_network
     restart: unless-stopped
-
 
   redis:
     image: redis:7-alpine
     networks:
       - attendee_network
+    env_file:
+      - .env
     restart: unless-stopped
     volumes:
       - redis:/data/redis
